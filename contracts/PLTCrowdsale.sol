@@ -337,16 +337,17 @@ contract PLTCrowdsale is Ownable, Crowdsale, MintableToken {
     enum State {Active, Closed}
     State public state;
     uint256[] public rates  = [30000, 15000, 7250, 7000, 6750, 6500, 6250, 6000, 5750, 5500, 5250, 5000];
-/*
+
     uint256[] public limits =  [50*10**24,  75*10**24, 100*10**24, 125*10**24,
                                150*10**24, 175*10**24, 200*10**24, 225*10**24,
                                250*10**24, 275*10**24, 300*10**24, 350*10**24];
-*/
 
+/*
     //For tests
     uint256[] public limits =  [50*10**21, 75*10**21, 100*10**21, 125*10**21,
                                 150*10**21, 175*10**21, 200*10**21, 225*10**21,
                                 250*10**21, 275*10**21, 300*10**21, 350*10**21];
+*/
 
     mapping (address => uint256) public deposited;
 
@@ -506,6 +507,10 @@ contract PLTCrowdsale is Ownable, Crowdsale, MintableToken {
         finishMinting();
         Finalized();
         result = true;
+    }
+
+    function removeContract() public onlyOwner {
+        selfdestruct(owner);
     }
 }
 
