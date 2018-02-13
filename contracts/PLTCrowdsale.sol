@@ -338,10 +338,11 @@ contract PLTCrowdsale is Ownable, Crowdsale, MintableToken {
     State public state;
     uint256[] public rates  = [30000, 15000, 7250, 7000, 6750, 6500, 6250, 6000, 5750, 5500, 5250, 5000];
 /*
-    uint256[] public limits =  [50*10**24, 25*10**24, 25*10**24, 25*10**24,
-                                25*10**24, 25*10**24, 25*10**24, 25*10**24,
-                                25*10**24, 25*10**24, 25*10**24, 50*10**24];
+    uint256[] public limits =  [50*10**24,  75*10**24, 100*10**24, 125*10**24,
+                               150*10**24, 175*10**24, 200*10**24, 225*10**24,
+                               250*10**24, 275*10**24, 300*10**24, 350*10**24];
 */
+
     //For tests
     uint256[] public limits =  [50*10**21, 75*10**21, 100*10**21, 125*10**21,
                                 150*10**21, 175*10**21, 200*10**21, 225*10**21,
@@ -403,7 +404,6 @@ contract PLTCrowdsale is Ownable, Crowdsale, MintableToken {
         require(_investor != address(0));
         require(saleToken == true);
         uint256 weiAmount = msg.value;
-        require(weiAmount >= weiMinSale);
         uint256 tokens = validPurchaseTokens(weiAmount);
         if (tokens == 0) {revert();}
         weiRaised = weiRaised.add(weiAmount);
@@ -437,12 +437,6 @@ contract PLTCrowdsale is Ownable, Crowdsale, MintableToken {
     function getTotalAmountOfTokens(uint256 _weiAmount) internal view returns (uint256) {
         uint256 currentPeriod = getPeriod(tokenAllocated);
         uint256 amountOfTokens = 0;
-        if(currentPeriod < 12){
-            amountOfTokens = _weiAmount.mul(rates[currentPeriod]);
-        } else {
-            amountOfTokens = 0;
-        }
-        currentPeriod = getPeriod(tokenAllocated.add(amountOfTokens));
         if(currentPeriod < 12){
             amountOfTokens = _weiAmount.mul(rates[currentPeriod]);
         } else {
@@ -485,7 +479,7 @@ contract PLTCrowdsale is Ownable, Crowdsale, MintableToken {
     }
 
     /**
-    * Hard cap - 10,000 ETH
+    * Hard cap - 49700 ETH
     * for token sale (20million)
     */
     function validPurchaseTokens(uint256 _weiAmount) public inState(State.Active) returns (uint256) {
@@ -498,7 +492,11 @@ contract PLTCrowdsale is Ownable, Crowdsale, MintableToken {
             HardCapReached();
             return 0;
         }
-        return addTokens;
+        if (_weiAmount < weiMinSale) {
+            return 0;
+        }
+
+    return addTokens;
     }
 
     function finalize() public onlyOwner inState(State.Active) returns (bool result) {

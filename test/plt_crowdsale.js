@@ -8,8 +8,8 @@ contract('PLTCrowdsale', (accounts) => {
     var buyWei = 5 * 10**17;
     var rateNew = 30000;
     var buyWeiNew = 5 * 10**17;
-    var buyWeiMin = 3 * 10**15;
-    var buyWeiCap = 600 * 10**24;
+    var buyWeiMin = 1 * 10**15;
+    var buyWeiCap = 49700 * (10 ** 18);
 
     var period = 0;
 
@@ -82,60 +82,58 @@ contract('PLTCrowdsale', (accounts) => {
     });
 
 
-    it('verification tokens limit per stages', async ()  => {
-        //period = await contract.getPeriod.call();
-        //console.log("period = " + period)
-/*
-        var byWeiLimit = 4 * 10**15;
-        var numberTokensPreSaleMin = await contract.validPurchaseTokens.call(byWeiLimit);
-        await contract.buyTokens(accounts[3],{from:accounts[3], value:byWeiLimit});
-        console.log("numberTokensPreSaleMin = " + numberTokensPreSaleMin);
-        assert.equal(byWeiLimit*30000, numberTokensPreSaleMin);
-*/
+    it('verification define period', async ()  => {
+        period = await contract.getPeriod(30*10**21);
+        assert.equal(0, period);
 
-period = await contract.getPeriod(90*10**21);
-console.log("period = " + period)
+        period = await contract.getPeriod(60*10**21);
+        assert.equal(1, period);
 
-/*
-        byWeiLimit = 2 * 10**18;
-        var numberTokensPreSaleLimit = await contract.validPurchaseTokens.call(byWeiLimit);
-        await contract.buyTokens(accounts[3],{from:accounts[3], value:byWeiLimit});
-        console.log("numberTokensPreSaleLimit = " + numberTokensPreSaleLimit);
-        period = await contract.getPeriod.call();
-        console.log("period = " + period)
-        assert.equal(byWeiLimit*15000, numberTokensPreSaleLimit);
+        period = await contract.getPeriod(90*10**21);
+        assert.equal(2, period);
 
-        byWeiLimit = 2 * 10**18;
-        var numberTokensPreSaleLimit = await contract.validPurchaseTokens.call(byWeiLimit);
-        await contract.buyTokens(accounts[3],{from:accounts[3], value:byWeiLimit});
-        console.log("numberTokensPreSaleLimit = " + numberTokensPreSaleLimit);
-        //period = await contract.getPeriod.call();
-        //console.log("period = " + period)
-*/
+        period = await contract.getPeriod(320*10**21);
+        assert.equal(11, period);
 
-//assert.equal(0, numberTokensMinWey);
+        period = await contract.getPeriod(390*10**21);
+        assert.equal(12, period);
+
     });
 
+    it('verification valid purchase token', async ()  => {
+        var newByWei = 5 * 10**16;
+        var numberToken = await contract.validPurchaseTokens.call(Number(newByWei));
+        assert.equal( newByWei*30000, numberToken);
 
-/*
+        var tokenAllocatedBefore = await contract.tokenAllocated.call();
+        //console.log("tokenAllocatedBefore = " + tokenAllocatedBefore);
+        newByWei = 2 * 10**18;
+        numberToken = await contract.validPurchaseTokens.call(Number(newByWei));
+        await contract.buyTokens(accounts[3],{from:accounts[3], value:newByWei});
+        var tokenAllocated = await contract.tokenAllocated.call();
+        //console.log("tokenAllocated = " + tokenAllocated);
+        assert.equal( newByWei*30000, numberToken);
+        numberToken = await contract.validPurchaseTokens.call(Number(newByWei));
+        assert.equal( newByWei*7250, numberToken);
+        //console.log("numberToken = " + numberToken);
+    });
+
     it('verification tokens limit min amount', async ()  => {
             var numberTokensMinWey = await contract.validPurchaseTokens.call(buyWeiMin);
             //console.log("numberTokensMinWey = " + numberTokensMinWey);
             assert.equal(0, numberTokensMinWey);
     });
-*/
 
-/*
     it('verification tokens cap reached', async ()  => {
             var numberTokensNormal = await contract.validPurchaseTokens.call(buyWei);
             //console.log("numberTokensNormal = " + numberTokensNormal);
-            assert.equal(rate*buyWei, numberTokensNormal);
+            assert.equal(7250*buyWei, numberTokensNormal);
 
             var numberTokensFault = await contract.validPurchaseTokens.call(buyWeiCap);
             //console.log("numberTokensFault = " + numberTokensFault);
             assert.equal(0, numberTokensFault);
     });
-*/
+
 
 });
 
